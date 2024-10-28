@@ -4,18 +4,11 @@ import java.util.List;
 
 public class TaskManager {
 
-    private static int idCount;
+    private static int idCount = 0;
 
-    private final HashMap<Integer, Task> tasksById;
-    private final HashMap<Integer, SubTask> subTasksById;
-    private final HashMap<Integer, Epic> epicsById;
-
-    public TaskManager() {
-        idCount = 0;
-        tasksById = new HashMap<>();
-        subTasksById = new HashMap<>();
-        epicsById = new HashMap<>();
-    }
+    private final HashMap<Integer, Task> tasksById = new HashMap<>();
+    private final HashMap<Integer, SubTask> subTasksById = new HashMap<>();
+    private final HashMap<Integer, Epic> epicsById = new HashMap<>();
 
     //Методы работы с Task
     public List<Task> getAllTasks() {

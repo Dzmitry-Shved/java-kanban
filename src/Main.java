@@ -11,19 +11,15 @@ public class Main {
     public static void practicumTest() {
         TaskManager tm = new TaskManager();
 
-        Task task1 = new Task("Задача1", "Описание задачи1");
-        task1.setStatus(Status.NEW);
-        Task task2 = new Task("Задача2", "Описание задачи2");
-        task2.setStatus(Status.NEW);
+        Task task1 = new Task("Задача1", "Описание задачи1", Status.NEW);
+        Task task2 = new Task("Задача2", "Описание задачи2", Status.NEW);
 
         tm.addTask(task1);
         tm.addTask(task2);
 
         Epic epic1 = new Epic("Эпик1", "Описание эпика1");
-        SubTask subTask1 = new SubTask("Субтаска1", "Описание субтаски1", epic1);
-        subTask1.setStatus(Status.NEW);
-        SubTask subTask2 = new SubTask("Субтаска2", "Описание субтаски2", epic1);
-        subTask2.setStatus(Status.NEW);
+        SubTask subTask1 = new SubTask("Субтаска1", "Описание субтаски1", Status.NEW, epic1);
+        SubTask subTask2 = new SubTask("Субтаска2", "Описание субтаски2", Status.NEW, epic1);
         epic1.getSubTasks().add(subTask1);
         epic1.getSubTasks().add(subTask2);
 

@@ -12,6 +12,14 @@ public class Task {
         this.description = description;
     }
 
+    /*отдельный конструктор со статусом чтобы явно не передавать в конструктор null при создании нового Epic вне
+    TaskManager, т.к согласно ТЗ его статус рассчитывается в TaskManager и не может быть установлен или изменен извне */
+    public Task(String name, String description, Status status) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+    }
+
     public int getId() {
         return id;
     }
