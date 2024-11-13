@@ -1,15 +1,13 @@
-import java.util.List;
-
 public class Main {
 
     public static void main(String[] args) {
 
-        practicumTest();
+        sprint5Test();
 
     }
 
     public static void practicumTest() {
-        TaskManager tm = new TaskManager();
+        TaskManager tm = new InMemoryTaskManager();
 
         Task task1 = new Task("Задача1", "Описание задачи1", Status.NEW);
         Task task2 = new Task("Задача2", "Описание задачи2", Status.NEW);
@@ -86,139 +84,59 @@ public class Main {
         System.out.println(tm.getAllEpics());
     }
 
-    public static void testTasks() {
-        TaskManager tm = new TaskManager();
+    public static void sprint5Test() {
+        TaskManager tm = Managers.getDefault();
 
-        Task task1 = new Task("Задача1", "Описание задачи1");
-        task1.setStatus(Status.NEW);
-        Task task2 = new Task("Задача2", "Описание задачи2");
-        task2.setStatus(Status.NEW);
-        Task task3 = new Task("Задача3", "Описание задачи3");
-        task3.setStatus(Status.NEW);
+        Task task1 = new Task("Задача1", "Описание задачи1", Status.NEW);
         tm.addTask(task1);
+        Task task2 = new Task("Задача2", "Описание задачи2", Status.NEW);
         tm.addTask(task2);
+        Task task3 = new Task("Задача3", "Описание задачи3", Status.NEW);
         tm.addTask(task3);
-
-        System.out.println(tm.getTask(1));
-        System.out.println(tm.getTask(2));
-        System.out.println(tm.getTask(3));
-        System.out.println(tm.getAllTasks());
-
-        tm.deleteAllTasks();
-
-        Task task4 = new Task("Задача4", "Описание задачи4");
-        task4.setStatus(Status.NEW);
-        Task task5 = new Task("Задача5", "Описание задачи5");
-        task5.setStatus(Status.NEW);
-        Task task6 = new Task("Задача6", "Описание задачи6");
-        task6.setStatus(Status.NEW);
-        Task task7 = new Task("Задача7", "Описание задачи7");
-        task7.setStatus(Status.NEW);
+        Task task4 = new Task("Задача4", "Описание задачи4", Status.NEW);
         tm.addTask(task4);
+        Task task5 = new Task("Задача5", "Описание задачи5", Status.NEW);
         tm.addTask(task5);
-        tm.addTask(task6);
-        tm.addTask(task7);
-
-        System.out.println(tm.getTask(4));
-        System.out.println(tm.getTask(5));
-        System.out.println(tm.getTask(6));
-        System.out.println(tm.getTask(7));
-        System.out.println(tm.getAllTasks());
-
-        Task updatedTask4 = new Task("Задача4 Обновленная", "Описание задачи4 Обновлено");
-        updatedTask4.setId(4);
-        updatedTask4.setStatus(Status.DONE);
-        Task updatedTask5 = new Task("Задача5 Обновленная", "Описание задачи5 Обновлено");
-        updatedTask5.setId(5);
-        updatedTask5.setStatus(Status.DONE);
-
-        tm.updateTask(updatedTask4);
-        tm.updateTask(updatedTask5);
-
-        System.out.println(tm.getTask(4));
-        System.out.println(tm.getTask(5));
-        System.out.println(tm.getAllTasks());
-
-        tm.deleteAllTasks();
-        System.out.println(tm.getAllTasks());
-    }
-
-    public static void testSubTasks() {
-        TaskManager tm = new TaskManager();
 
         Epic epic1 = new Epic("Эпик1", "Описание эпика1");
-        Epic epic2 = new Epic("Эпик2", "Описание эпика2");
-        Epic epic3 = new Epic("Эпик3", "Описание эпика2");
+        SubTask subTask1 = new SubTask("Субтаска1", "Описание субтаски1", Status.NEW, epic1);
+        SubTask subTask2 = new SubTask("Субтаска2", "Описание субтаски2", Status.NEW, epic1);
+        epic1.getSubTasks().add(subTask1);
+        epic1.getSubTasks().add(subTask2);
         tm.addEpic(epic1);
+
+        Epic epic2 = new Epic("Эпик2", "Описание эпика2");
+        SubTask subTask3 = new SubTask("Субтаска3", "Описание субтаски3", Status.NEW, epic2);
+        epic2.getSubTasks().add(subTask3);
         tm.addEpic(epic2);
-        tm.addEpic(epic3);
 
-        System.out.println(tm.getEpic(1));
-        System.out.println(tm.getEpic(2));
-        System.out.println(tm.getEpic(3));
-        System.out.println(tm.getAllEpics());
+        Task task6 = new Task("Задача6", "Описание задачи6", Status.NEW);
+        tm.addTask(task6);
 
-        //понимаю что субтаска создается исключительно в рамках существующего в репозитории эпика и знает о нем
-        Epic existingEpic1 = new Epic("Эпик1", "Описание эпика1");
-        existingEpic1.setId(1);
+        int id = 1;
+        System.out.printf("Вызван Task с id=%d:\n%s\n", id, tm.getTask(id));
+        System.out.printf("История просмотров:\n%s\n", tm.getHistory());
+        id = 11;
+        System.out.printf("Вызван Task с id=%d:\n%s\n", id, tm.getTask(id));
+        System.out.printf("История просмотров:\n%s\n", tm.getHistory());
+        id = 6;
+        System.out.printf("Вызван Epic с id=%d:\n%s\n", id, tm.getEpic(id));
+        System.out.printf("История просмотров:\n%s\n", tm.getHistory());
+        id = 8;
+        System.out.printf("Вызван SubTask с id=%d:\n%s\n", id, tm.getSubTask(id));
+        System.out.printf("История просмотров:\n%s\n", tm.getHistory());
 
-        SubTask subTask1 = new SubTask("Субтаска1", "Описание субтаски1", existingEpic1);
-        subTask1.setStatus(Status.NEW);
-        SubTask subTask2 = new SubTask("Субтаска2", "Описание субтаски2", existingEpic1);
-        subTask2.setStatus(Status.NEW);
-        SubTask subTask3 = new SubTask("Субтаска3", "Описание субтаски3", existingEpic1);
-        subTask3.setStatus(Status.NEW);
-        tm.addSubTask(subTask1);
-        tm.addSubTask(subTask2);
-        tm.addSubTask(subTask3);
+        System.out.println("-".repeat(100));
 
-        List<SubTask> subTasks = tm.getAllSubTasks();
-        for (SubTask subTask : subTasks) {
-            System.out.println(subTask);
+        id = 3;
+        for (int i = 1; i <= 6; i++) {
+            System.out.printf("Вызван Task с id=%d:\n%s\n", id, tm.getTask(id));
         }
+        System.out.printf("История просмотров:\n%s\n", tm.getHistory());
 
-        System.out.println(tm.getEpic(1));
-        System.out.println(tm.getSubTask(5));
-        System.out.println(tm.getAllSubTasks(existingEpic1));
-
-        //понимаю что субтаска обновляется исключительно в рамках существующего в репозитории эпика и знает о нем
-        Epic anotherExistingEpic1 = new Epic("Эпик1", "Описание эпика1");
-        anotherExistingEpic1.setId(1);
-        SubTask updatedSubTask2 = new SubTask("Обновленная Субтаска2", "Обновленное Описание субтаски2",
-                anotherExistingEpic1);
-        updatedSubTask2.setId(5);
-        updatedSubTask2.setStatus(Status.DONE);
-        tm.updateSubTask(updatedSubTask2);
-
-        System.out.println(tm.getSubTask(5));
-        System.out.println(tm.getEpic(1));
-
-        tm.deleteSubTask(4);
-        tm.deleteSubTask(6);
-
-        System.out.println(tm.getEpic(1));
-        for (SubTask subTask : tm.getAllSubTasks()) {
-            System.out.println(subTask);
-        }
-
-
-        Epic existingEpic3 = new Epic("Эпик1", "Описание эпика1");
-        existingEpic3.setId(3);
-        SubTask subTask4 = new SubTask("Субтаска4", "Описание субтаски4", existingEpic3);
-        subTask4.setStatus(Status.NEW);
-        SubTask subTask5 = new SubTask("Субтаска5", "Описание субтаски5", existingEpic3);
-        subTask5.setStatus(Status.DONE);
-        tm.addSubTask(subTask4);
-        tm.addSubTask(subTask5);
-
-        System.out.println(tm.getAllSubTasks());
-        System.out.println(tm.getEpic(3));
-
-
-        tm.deleteAllSubTasks();
-        System.out.println(tm.getAllSubTasks());
-        System.out.println(tm.getEpic(1));
-        System.out.println(tm.getEpic(3));
+        id = 5;
+        System.out.printf("Вызван Task с id=%d:\n%s\n", id, tm.getTask(id));
+        System.out.printf("История просмотров:\n%s\n", tm.getHistory());
 
     }
 }
