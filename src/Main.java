@@ -1,3 +1,7 @@
+import managers.*;
+import tasks.*;
+
+
 public class Main {
 
     public static void main(String[] args) {
@@ -114,28 +118,28 @@ public class Main {
         tm.addTask(task6);
 
         int id = 1;
-        System.out.printf("Вызван Task с id=%d:\n%s\n", id, tm.getTask(id));
+        System.out.printf("Вызван tasks.Task с id=%d:\n%s\n", id, tm.getTask(id));
         System.out.printf("История просмотров:\n%s\n", tm.getHistory());
         id = 11;
-        System.out.printf("Вызван Task с id=%d:\n%s\n", id, tm.getTask(id));
+        System.out.printf("Вызван tasks.Task с id=%d:\n%s\n", id, tm.getTask(id));
         System.out.printf("История просмотров:\n%s\n", tm.getHistory());
         id = 6;
-        System.out.printf("Вызван Epic с id=%d:\n%s\n", id, tm.getEpic(id));
+        System.out.printf("Вызван tasks.Epic с id=%d:\n%s\n", id, tm.getEpic(id));
         System.out.printf("История просмотров:\n%s\n", tm.getHistory());
         id = 8;
-        System.out.printf("Вызван SubTask с id=%d:\n%s\n", id, tm.getSubTask(id));
+        System.out.printf("Вызван tasks.SubTask с id=%d:\n%s\n", id, tm.getSubTask(id));
         System.out.printf("История просмотров:\n%s\n", tm.getHistory());
 
         System.out.println("-".repeat(100));
 
         id = 3;
         for (int i = 1; i <= 6; i++) {
-            System.out.printf("Вызван Task с id=%d:\n%s\n", id, tm.getTask(id));
+            System.out.printf("Вызван tasks.Task с id=%d:\n%s\n", id, tm.getTask(id));
         }
         System.out.printf("История просмотров:\n%s\n", tm.getHistory());
 
         id = 5;
-        System.out.printf("Вызван Task с id=%d:\n%s\n", id, tm.getTask(id));
+        System.out.printf("Вызван tasks.Task с id=%d:\n%s\n", id, tm.getTask(id));
         System.out.printf("История просмотров:\n%s\n", tm.getHistory());
 
     }

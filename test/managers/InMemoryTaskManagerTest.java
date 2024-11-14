@@ -1,3 +1,7 @@
+package managers;
+
+import tasks.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +19,7 @@ class InMemoryTaskManagerTest {
 
     }
 
-    //Тесты работы с Task
+    //Тесты работы с tasks.Task
     @Test
     public void add_newTask_returnedTaskByIdNotNull() {
         Task task = new Task("task", "task description");
@@ -100,7 +104,7 @@ class InMemoryTaskManagerTest {
         assertEquals(Status.DONE, updatedTask.getStatus());
     }
 
-    //Тесты работы с SubTask
+    //Тесты работы с tasks.SubTask
     @Test
     public void add_newSubTask_returnedSubTaskByIdNotNull() {
         Epic epic = new Epic("Эпик1", "Описание эпика1");
@@ -200,7 +204,7 @@ class InMemoryTaskManagerTest {
         assertEquals(Status.DONE, updatedSubTask.getStatus());
     }
 
-    //Тесты работы с Epic
+    //Тесты работы с tasks.Epic
     @Test
     public void add_newEpic_returnedEpicByIdNotNull() {
         Epic epic = new Epic("Эпик1", "Описание эпика1");

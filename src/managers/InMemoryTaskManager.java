@@ -1,14 +1,19 @@
+package managers;
+
+import tasks.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
 
     private int idCount = 0;
 
-    private final HashMap<Integer, Task> tasksById = new HashMap<>();
-    private final HashMap<Integer, SubTask> subTasksById = new HashMap<>();
-    private final HashMap<Integer, Epic> epicsById = new HashMap<>();
+    private final Map<Integer, Task> tasksById = new HashMap<>();
+    private final Map<Integer, SubTask> subTasksById = new HashMap<>();
+    private final Map<Integer, Epic> epicsById = new HashMap<>();
 
     private final HistoryManager historyManager = Managers.getDefaultHistory();
 
@@ -154,7 +159,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.setId(generateId());
 
         //назначаю id Субтаскам Эпика и добавляю в репозиторий
-        ArrayList<SubTask> subTasks = epic.getSubTasks();
+        List<SubTask> subTasks = epic.getSubTasks();
         for (SubTask subTask : subTasks) {
             subTask.setId(generateId());
             subTasksById.put(subTask.getId(), subTask);
@@ -170,7 +175,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateEpic(Epic epic) {
         //заменяю Субтаски в репозитории (назначаю id если Субтаска новая)
-        ArrayList<SubTask> subTasks = epic.getSubTasks();
+        List<SubTask> subTasks = epic.getSubTasks();
         for (SubTask subTask : subTasks) {
             if (subTask.getId() == 0) {
                 subTask.setId(generateId());
@@ -188,7 +193,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteEpic(int id) {
         //удаляю Субтаски удаляемого Эпика из репозитория
-        ArrayList<SubTask> epicSubTasks = epicsById.get(id).getSubTasks();
+        List<SubTask> epicSubTasks = epicsById.get(id).getSubTasks();
         for (SubTask subTask : epicSubTasks) {
             subTasksById.remove(subTask.getId());
         }
@@ -214,7 +219,7 @@ public class InMemoryTaskManager implements TaskManager {
             return;
         }
 
-        ArrayList<SubTask> subTasks = epic.getSubTasks();
+        List<SubTask> subTasks = epic.getSubTasks();
         int doneSubTasks = 0;
         for (SubTask subTask : epic.getSubTasks()) {
             if (subTask.getStatus() == Status.DONE) {
