@@ -2,45 +2,103 @@ package managers;
 
 import tasks.*;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private static final int HISTORY_CAPACITY = 10;
-    private final List<Task> history = new LinkedList<>();
+    private final HashMap<Integer, Node> history = new HashMap<>();
 
-    //В тестах проверяю только по полю name, так как Epic и SubTask в данном случае не глубокие копии (я не осилил их сделать)
+    private Node historyHead;
+    private Node historyTail;
+    private int historySize = 0;
+
     @Override
     public void add(Task task) {
-        if (task == null) {return;}
-
-        if (history.size() + 1 > HISTORY_CAPACITY) {
-            history.removeFirst();
+        if (task == null) {
+            return;
         }
 
-        if (task instanceof Epic epic) {
-            Epic epicCopy = new Epic(epic.getName(), epic.getDescription());
-            epicCopy.setStatus(epic.getStatus());
-            epicCopy.setSubTasks(new ArrayList<>(epic.getSubTasks()));
-            epicCopy.setId(epic.getId());
-            history.add(epicCopy);
-        } else if (task instanceof SubTask subTask) {
-            SubTask subTaskCopy = new SubTask(subTask.getName(), subTask.getDescription(), subTask.getStatus(),
-                    subTask.getEpic());
-            subTaskCopy.setId(subTask.getId());
-            history.add(subTaskCopy);
-        } else {
-            Task taskCopy = new Task(task.getName(), task.getDescription(), task.getStatus());
-            taskCopy.setId(task.getId());
-            history.add(taskCopy);
+        boolean isTaskPresent = history.containsKey(task.getId());
+        if (isTaskPresent) {
+            removeNode(history.get(task.getId()));
         }
+
+        Node node = new Node(task);
+        linkLast(node);
+        history.put(task.getId(), node);
     }
 
-    //Так как история отдается для просмотра и в приоритете операции получения по индексу - отдаю ArrayList
     @Override
     public List<Task> getHistory() {
-        return new ArrayList<>(history);
+        return getTasks();
+    }
+
+    @Override
+    public void remove(int id) {
+        Node nodeForRemove = history.remove(id);
+        removeNode(nodeForRemove);
+    }
+
+    private void linkLast(Node nodeForLink) {
+        if (historyHead == null) {
+            historyHead = nodeForLink;
+            historyTail = historyHead;
+        } else {
+            nodeForLink.prev = historyTail;
+            historyTail.next = nodeForLink;
+            historyTail = nodeForLink;
+        }
+        historySize++;
+    }
+
+    private void removeNode(Node node) {
+        if (node == null) {
+            return;
+        }
+
+        Node next = node.next;
+        Node prev = node.prev;
+
+        if (prev == null) {
+            historyHead = next;
+        } else {
+            prev.next = next;
+            node.prev = null;
+        }
+
+        if (next == null) {
+            historyTail = prev;
+        } else {
+            next.prev = prev;
+            node.next = null;
+        }
+        historySize--;
+    }
+
+    private List<Task> getTasks() {
+        if (historySize == 0) {
+            return List.of();
+        }
+        ArrayList<Task> taskHistory = new ArrayList<>(historySize);
+        Node currentNode = historyHead;
+        taskHistory.add(currentNode.task);
+        currentNode = historyHead.next;
+        while (currentNode != null) {
+            taskHistory.add(currentNode.task);
+            currentNode = currentNode.next;
+        }
+        return taskHistory;
+    }
+
+    static class Node {
+        private final Task task;
+        private Node next;
+        private Node prev;
+
+        public Node(Task task) {
+            this.task = task;
+            this.next = null;
+            this.prev = null;
+        }
     }
 }

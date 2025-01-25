@@ -25,6 +25,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {
+        for (Task taskForDelete : tasksById.values()) {
+            historyManager.remove(taskForDelete.getId());
+        }
         tasksById.clear();
     }
 
@@ -48,6 +51,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTask(int id) {
+        historyManager.remove(id);
         tasksById.remove(id);
     }
 
@@ -71,6 +75,10 @@ public class InMemoryTaskManager implements TaskManager {
             calculateEpicStatus(epic);
         }
 
+        //очищаю историю
+        for (SubTask subTaskForDelete : subTasksById.values()) {
+            historyManager.remove(subTaskForDelete.getId());
+        }
         //очищаю репозиторий
         subTasksById.clear();
     }
@@ -127,6 +135,8 @@ public class InMemoryTaskManager implements TaskManager {
         //рассчитываю статус Эпика после удаления
         calculateEpicStatus(subTask.getEpic());
 
+        //удаляю субтаску из истории
+        historyManager.remove(id);
         //удаляю Субтаску из репозитория
         subTasksById.remove(id);
     }
@@ -139,9 +149,15 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllEpics() {
+        //очищаю историю субтасков
+        deleteAllSubTasks();
         //очищаю репозиторий Субтасков
         subTasksById.clear();
 
+        //очищаю историю эпиков
+        for (Epic epicForDelete : epicsById.values()) {
+            historyManager.remove(epicForDelete.getId());
+        }
         //очищаю репозиторий Эпиков
         epicsById.clear();
     }
@@ -192,12 +208,15 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteEpic(int id) {
-        //удаляю Субтаски удаляемого Эпика из репозитория
+        //удаляю Субтаски удаляемого Эпика из репозитория и истории
         List<SubTask> epicSubTasks = epicsById.get(id).getSubTasks();
         for (SubTask subTask : epicSubTasks) {
+            historyManager.remove(subTask.getId());
             subTasksById.remove(subTask.getId());
         }
 
+        //удаляю эпик из истории
+        historyManager.remove(id);
         //удаляю Эпик из репозитория
         epicsById.remove(id);
     }
