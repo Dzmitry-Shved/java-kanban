@@ -45,89 +45,61 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void add_MoreThanTenTasks_historySizeIs10() {
-        for (int i = 1; i <= 10; i++ ) {
-            historyManager.add(TASK);
+    public void add_15TasksWithDifferentId_historySizeIs15() {
+        for (int i = 1; i <= 15; i++) {
+            Task task = new Task("task" + i, "task desc." + i, Status.NEW);
+            task.setId(i);
+            historyManager.add(task);
         }
-        historyManager.add(SUB_TASK);
-        historyManager.add(EPIC);
+
+        List<Task> history = historyManager.getHistory();
+        assertNotNull(history);
+        assertEquals(15, history.size());
+    }
+
+    @Test
+    public void add_taskWithSameIdAgain_historySizeIs1() {
+        historyManager.add(TASK);
+        historyManager.add(TASK);
 
         List<Task> history = historyManager.getHistory();
 
         assertNotNull(history);
-        assertEquals(10, history.size());
+        assertEquals(1, history.size());
+
     }
 
     @Test
-    public void add_EleventhTask_secondTaskBecomesFirst() {
+    public void add_5Tasks2OfThemWithSameId_historySizeIs3TasksShiftsAndLastTaskRewriteItsPreviousVersion() {
+        historyManager.add(EPIC);
+        historyManager.add(SUB_TASK);
+        historyManager.add(TASK);
+
+        assertEquals(EPIC, historyManager.getHistory().getFirst());
+        assertEquals(SUB_TASK, historyManager.getHistory().get(1));
+        assertEquals(TASK, historyManager.getHistory().getLast());
+
+        historyManager.add(EPIC);
+        historyManager.add(SUB_TASK);
+
+        assertEquals(3, historyManager.getHistory().size());
+        assertEquals(TASK, historyManager.getHistory().getFirst());
+        assertEquals(EPIC, historyManager.getHistory().get(1));
+        assertEquals(SUB_TASK, historyManager.getHistory().getLast());
+    }
+
+    @Test
+    public void remove_Task_PreviousAndNextTasksBecomesLinked() {
         historyManager.add(TASK);
         historyManager.add(SUB_TASK);
-        for (int i = 2; i <= 10; i++ ) {
-            historyManager.add(TASK);
-        }
+        historyManager.add(EPIC);
 
-        List<Task> history = historyManager.getHistory();
+        assertEquals(3, historyManager.getHistory().size());
+        assertEquals(SUB_TASK, historyManager.getHistory().get(1));
 
-        assertEquals(SUB_TASK, history.getFirst());
-    }
+        historyManager.remove(2);
 
-    @Test
-    public void add_addTaskThenUpdateAddAgain_2TasksSameIdDifferentNames() {
-        Task task = new Task("Изначальная", "Описание", Status.NEW);
-        task.setId(1);
-        historyManager.add(task);
-
-        task.setName("Обновленная");
-        historyManager.add(task);
-        List<Task> tasks = historyManager.getHistory();
-        Task task1 = tasks.get(0);
-        Task task2 = tasks.get(1);
-
-        assertEquals(2, tasks.size());
-        assertEquals(task1, task2);
-        assertEquals("Изначальная", task1.getName());
-        assertEquals("Обновленная", task2.getName());
-    }
-
-    @Test
-    public void add_addSubTaskThenUpdateAddAgain_2SubTasksSameIdDifferentNames() {
-        Epic epic = new Epic("Эпик", "Описание");
-        epic.setId(1);
-        SubTask subTask = new SubTask("Изначальная", "Описание", Status.NEW, epic);
-        subTask.setId(2);
-        historyManager.add(subTask);
-
-        subTask.setName("Обновленная");
-        historyManager.add(subTask);
-        List<Task> subTasks = historyManager.getHistory();
-        Task subTask1 = subTasks.get(0);
-        Task subTask2 = subTasks.get(1);
-
-        assertEquals(2, subTasks.size());
-        assertInstanceOf(SubTask.class, subTask1);
-        assertInstanceOf(SubTask.class, subTask2);
-        assertEquals(subTask1, subTask2);
-        assertEquals("Изначальная", subTask1.getName());
-        assertEquals("Обновленная", subTask2.getName());
-    }
-
-    @Test
-    public void add_addEpicThenUpdateAddAgain_2EpicsSameIdDifferentNames() {
-        Epic epic = new Epic("Изначальный", "Описание");
-        epic.setId(1);
-        historyManager.add(epic);
-
-        epic.setName("Обновленный");
-        historyManager.add(epic);
-        List<Task> epics = historyManager.getHistory();
-        Task epic1 = epics.get(0);
-        Task epic2 = epics.get(1);
-
-        assertEquals(2, epics.size());
-        assertInstanceOf(Epic.class, epic1);
-        assertInstanceOf(Epic.class, epic2);
-        assertEquals(epic1, epic2);
-        assertEquals("Изначальный", epic1.getName());
-        assertEquals("Обновленный", epic2.getName());
+        assertEquals(2, historyManager.getHistory().size());
+        assertEquals(EPIC, historyManager.getHistory().get(1));
     }
 }

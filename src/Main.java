@@ -6,7 +6,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        sprint5Test();
+        sprint6Test();
 
     }
 
@@ -143,4 +143,42 @@ public class Main {
         System.out.printf("История просмотров:\n%s\n", tm.getHistory());
 
     }
+
+    public static void sprint6Test() {
+        TaskManager tm = Managers.getDefault();
+
+        Task task1 = new Task("Задача1", "Описание задачи1", Status.NEW);
+        tm.addTask(task1);
+        Task task2 = new Task("Задача2", "Описание задачи2", Status.NEW);
+        tm.addTask(task2);
+        Epic epic1 = new Epic("Эпик1", "Описание эпика1");
+        SubTask subTask1 = new SubTask("Субтаска1", "Описание субтаски1", Status.NEW, epic1);
+        SubTask subTask2 = new SubTask("Субтаска2", "Описание субтаски2", Status.NEW, epic1);
+        SubTask subTask3 = new SubTask("Субтаска3", "Описание субтаски3", Status.NEW, epic1);
+        epic1.getSubTasks().add(subTask1);
+        epic1.getSubTasks().add(subTask2);
+        epic1.getSubTasks().add(subTask3);
+        tm.addEpic(epic1);
+        Epic epic2 = new Epic("Эпик2", "Описание эпика2");
+        tm.addEpic(epic2);
+
+        System.out.printf("Вызван tasks.Task с id=%d:\n%s\n", 1, tm.getTask(1));
+        System.out.printf("Вызван tasks.Task с id=%d:\n%s\n", 2, tm.getTask(2));
+        System.out.printf("История просмотров (%d):\n%s\n", tm.getHistory().size(), tm.getHistory());
+        System.out.printf("Вызван tasks.Epic с id=%d:\n%s\n", 6, tm.getEpic(3));
+        System.out.printf("История просмотров (%d):\n%s\n", tm.getHistory().size(), tm.getHistory());
+        System.out.printf("Вызван tasks.Task с id=%d:\n%s\n", 1, tm.getTask(1));
+        System.out.printf("История просмотров (%d):\n%s\n", tm.getHistory().size(), tm.getHistory());
+        System.out.printf("Вызван tasks.Subtask с id=%d:\n%s\n", 4, tm.getSubTask(4));
+        System.out.printf("Вызван tasks.Subtask с id=%d:\n%s\n", 5, tm.getSubTask(5));
+        System.out.printf("История просмотров (%d):\n%s\n", tm.getHistory().size(), tm.getHistory());
+        System.out.printf("Вызван tasks.Task с id=%d:\n%s\n", 1, tm.getTask(1));
+        System.out.printf("История просмотров (%d):\n%s\n", tm.getHistory().size(), tm.getHistory());
+        tm.deleteTask(2);
+        System.out.printf("История просмотров (%d):\n%s\n", tm.getHistory().size(), tm.getHistory());
+        tm.deleteEpic(3);
+        System.out.printf("История просмотров (%d):\n%s\n", tm.getHistory().size(), tm.getHistory());
+
+    }
+
 }

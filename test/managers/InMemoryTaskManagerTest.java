@@ -75,6 +75,30 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    public void deleteAllTasks_addAndCall2TaskEpicSubtaskThenDeleteAllTasks_historySizeIs2() {
+        Task task1 = new Task("task", "task description");
+        Task task2 = new Task("task", "task description");
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+        Epic epic = new Epic("Эпик1", "Описание эпика1");
+        taskManager.addEpic(epic);
+        SubTask subTask1 = new SubTask("Субтаска1", "Описание субтаски1", Status.NEW, epic);
+        taskManager.addSubTask(subTask1);
+
+        taskManager.getTask(1);
+        taskManager.getTask(2);
+        taskManager.getEpic(3);
+        taskManager.getSubTask(4);
+        assertEquals(4, taskManager.getHistory().size());
+
+        taskManager.deleteAllTasks();
+
+        assertEquals(2, taskManager.getHistory().size());
+        assertEquals(epic, taskManager.getHistory().getFirst());
+        assertEquals(subTask1, taskManager.getHistory().getLast());
+    }
+
+    @Test
     public void deleteTask_addTaskThenDelete_returnedTaskIsNull() {
         Task task1 = new Task("task", "task description");
         taskManager.addTask(task1);
@@ -87,6 +111,19 @@ class InMemoryTaskManagerTest {
         Task deletedTask = taskManager.getTask(generatedId);
 
         assertNull(deletedTask);
+    }
+
+    @Test
+    public void deleteTask_addAndCallTaskThenDelete_historyIsEmpty() {
+        Task task1 = new Task("task", "task description");
+        taskManager.addTask(task1);
+        taskManager.getTask(1);
+
+        assertEquals(1, taskManager.getHistory().size());
+
+        taskManager.deleteTask(1);
+
+        assertEquals(0, taskManager.getHistory().size());
     }
 
     @Test
@@ -170,6 +207,30 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    public void deleteAllSubTasks_addAndCall2TaskEpicSubtaskThenDeleteAllSubTasks_historySizeIs3() {
+        Task task1 = new Task("task", "task description");
+        Task task2 = new Task("task", "task description");
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+        Epic epic = new Epic("Эпик1", "Описание эпика1");
+        taskManager.addEpic(epic);
+        SubTask subTask1 = new SubTask("Субтаска1", "Описание субтаски1", Status.NEW, epic);
+        taskManager.addSubTask(subTask1);
+
+        taskManager.getTask(1);
+        taskManager.getTask(2);
+        taskManager.getEpic(3);
+        taskManager.getSubTask(4);
+        assertEquals(4, taskManager.getHistory().size());
+
+        taskManager.deleteAllSubTasks();
+
+        assertEquals(3, taskManager.getHistory().size());
+        assertEquals(task1, taskManager.getHistory().getFirst());
+        assertEquals(epic, taskManager.getHistory().getLast());
+    }
+
+    @Test
     public void deleteSubTask_addSubTaskThenDelete_returnedTSubTaskIsNull() {
         Epic epic = new Epic("Эпик1", "Описание эпика1");
         taskManager.addEpic(epic);
@@ -184,6 +245,41 @@ class InMemoryTaskManagerTest {
         SubTask deletedSubTask = taskManager.getSubTask(generatedId);
 
         assertNull(deletedSubTask);
+    }
+
+    @Test
+    public void deleteSubTask_addEpicWith3SubTasksThenDeleteSubtasks_epicsSubtasksListIsEmpty() {
+        Epic epic = new Epic("Эпик1", "Описание эпика1");
+        taskManager.addEpic(epic);
+        SubTask subTask1 = new SubTask("Субтаска1", "Описание субтаски1", Status.NEW, epic);
+        taskManager.addSubTask(subTask1);
+        SubTask subTask2 = new SubTask("Субтаска2", "Описание субтаски2", Status.NEW, epic);
+        taskManager.addSubTask(subTask2);
+        SubTask subTask3 = new SubTask("Субтаска3", "Описание субтаски3", Status.NEW, epic);
+        taskManager.addSubTask(subTask3);
+
+        assertEquals(3, taskManager.getEpic(1).getSubTasks().size());
+
+        taskManager.deleteSubTask(3);
+        assertEquals(2, taskManager.getEpic(1).getSubTasks().size());
+
+        taskManager.deleteAllSubTasks();
+        assertEquals(0, taskManager.getEpic(1).getSubTasks().size());
+    }
+
+    @Test
+    public void deleteSubTask_addAndCallSubTaskThenDelete_historyIsEmpty() {
+        Epic epic = new Epic("Эпик1", "Описание эпика1");
+        taskManager.addEpic(epic);
+        SubTask subTask1 = new SubTask("Субтаска1", "Описание субтаски1", Status.NEW, epic);
+        taskManager.addSubTask(subTask1);
+        taskManager.getSubTask(2);
+
+        assertEquals(1, taskManager.getHistory().size());
+
+        taskManager.deleteSubTask(2);
+
+        assertEquals(0, taskManager.getHistory().size());
     }
 
     @Test
@@ -246,6 +342,30 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    public void deleteAllEpics_addAndCall2TaskEpicSubtaskThenDeleteAllEpics_historySizeIs2AndSubtasksAlsoDeleted() {
+        Task task1 = new Task("task", "task description");
+        Task task2 = new Task("task", "task description");
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+        Epic epic = new Epic("Эпик1", "Описание эпика1");
+        taskManager.addEpic(epic);
+        SubTask subTask1 = new SubTask("Субтаска1", "Описание субтаски1", Status.NEW, epic);
+        taskManager.addSubTask(subTask1);
+
+        taskManager.getTask(1);
+        taskManager.getTask(2);
+        taskManager.getEpic(3);
+        taskManager.getSubTask(4);
+        assertEquals(4, taskManager.getHistory().size());
+
+        taskManager.deleteAllEpics();
+
+        assertEquals(2, taskManager.getHistory().size());
+        assertEquals(task1, taskManager.getHistory().getFirst());
+        assertEquals(task2, taskManager.getHistory().getLast());
+    }
+
+    @Test
     public void deleteEpic_addEpicThenDelete_returnedEpicIsNull() {
         Epic epic1 = new Epic("Эпик1", "Описание эпика1");
         taskManager.addEpic(epic1);
@@ -258,6 +378,22 @@ class InMemoryTaskManagerTest {
         Epic deletedEpic = taskManager.getEpic(generatedId);
 
         assertNull(deletedEpic);
+    }
+
+    @Test
+    public void deleteEpic_addAndCallEpicAndSubtaskThenDelete_historyIsEmpty() {
+        Epic epic = new Epic("Эпик1", "Описание эпика1");
+        taskManager.addEpic(epic);
+        SubTask subTask1 = new SubTask("Субтаска1", "Описание субтаски1", Status.NEW, epic);
+        taskManager.addSubTask(subTask1);
+        taskManager.getEpic(1);
+        taskManager.getSubTask(2);
+
+        assertEquals(2, taskManager.getHistory().size());
+
+        taskManager.deleteEpic(1);
+
+        assertEquals(0, taskManager.getHistory().size());
     }
 
     @Test
