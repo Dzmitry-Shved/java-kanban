@@ -22,6 +22,10 @@ public class Task {
         this.status = status;
     }
 
+    public Type getType() {
+        return Type.TASK;
+    }
+
     public int getId() {
         return id;
     }

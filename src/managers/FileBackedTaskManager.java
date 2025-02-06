@@ -11,7 +11,8 @@ import java.util.*;
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private final Path taskManagerPath;
-    private final TaskIdComparator taskIdComparator = new TaskIdComparator();
+
+    private static final TaskIdComparator TASK_ID_COMPARATOR = new TaskIdComparator();
 
     private static final String TABLE_HEAD = "id,type,name,status,description,epic";
     private static final String TASK_AND_EPIC_FORMAT = "%s,%s,%s,%s,%s";
@@ -138,8 +139,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(path);
         try (BufferedReader reader = Files.newBufferedReader(path)) {
             reader.readLine();
+            String lastLine = null;
             while (reader.ready()) {
                 String line = reader.readLine();
+                lastLine = line;
                 Type type = Type.valueOf(line.split(",")[1]);
                 switch (type) {
                     case TASK:
@@ -151,12 +154,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     default:
                         fileBackedTaskManager.restoreSubtask((SubTask) fromString(line, type));
                 }
-                if (!reader.ready()) {
-                    fileBackedTaskManager.setIdCount(Integer.parseInt(line.split(",")[0]));
-                }
+            }
+            //насчет решения добавил комментарий в пул-реквесте
+            if (lastLine != null) {
+                fileBackedTaskManager.setIdCount(Integer.parseInt(lastLine.split(",")[0]));
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ManagerLoadException();
         }
         fileBackedTaskManager.bindEpicsAndSubtasks();
 
@@ -181,7 +185,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         taskManagerList.addAll(super.getAllTasks());
         taskManagerList.addAll(super.getAllEpics());
         taskManagerList.addAll(super.getAllSubTasks());
-        taskManagerList.sort(taskIdComparator);
+        taskManagerList.sort(TASK_ID_COMPARATOR);
 
         return taskManagerList;
 
@@ -190,7 +194,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private static String toString(Task task) {
         Formatter formatter = new Formatter();
 
-        if (task instanceof SubTask subTask) {
+        if (task.getType() == Type.SUBTASK) {
+            SubTask subTask = (SubTask) task;
             formatter.format(
                     SUBTASK_FORMAT,
                     subTask.getId(),
@@ -247,8 +252,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    private static class ManagerSaveException extends RuntimeException {
+    public static class ManagerSaveException extends RuntimeException {
         public ManagerSaveException() {
+        }
+    }
+
+    public static class ManagerLoadException extends RuntimeException {
+        public ManagerLoadException() {
         }
     }
 }
