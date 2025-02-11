@@ -2,10 +2,7 @@ package managers;
 
 import tasks.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -251,6 +248,37 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStatus(Status.DONE);
         } else {
             epic.setStatus(Status.IN_PROGRESS);
+        }
+    }
+
+    /*Я не догоняю как по другому восстановить состояние менеджера и файла. Т.к. в файле может находиться одна запись
+    с id=100, то без доступа к счетчику и репозиториям напрямую из метода восстановления в наследнике
+    я не понимаю как корректно восстановить состояние счетчика и положить в мапы задачи со спарсенными id, т.к. публичные
+    методы добавления у родителя сами присваивают id по счетчику.
+    В случае с использованием protected по-хорошему нужно создавать отдельный пакет для ТаскМенеджера как я понял.*/
+    protected void setIdCount(int idCount) {
+        this.idCount = idCount;
+    }
+
+    protected void restoreTask(Task task) {
+        tasksById.put(task.getId(), task);
+    }
+
+    protected void restoreEpic(Epic epic) {
+        calculateEpicStatus(epic);
+        epicsById.put(epic.getId(), epic);
+    }
+
+    protected void restoreSubtask(SubTask subTask) {
+        subTasksById.put(subTask.getId(), subTask);
+    }
+
+    protected void bindEpicsAndSubtasks() {
+        for (SubTask subTask : subTasksById.values()) {
+            Epic epic = epicsById.get(subTask.getEpic().getId());
+            epic.getSubTasks().add(subTask);
+            subTask.setEpic(epic);
+            calculateEpicStatus(epic);
         }
     }
 }

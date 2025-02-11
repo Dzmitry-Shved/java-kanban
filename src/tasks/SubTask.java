@@ -23,6 +23,11 @@ public class SubTask extends Task {
     }
 
     @Override
+    public Type getType() {
+        return Type.SUBTASK;
+    }
+
+    @Override
     public String toString() {
         return "Sub" + super.toString() +
                 ", epic=" + epic.toString() +
